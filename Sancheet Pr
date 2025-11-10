@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <string.h>
+
+typedef struct process {
+    char pname[10];
+    int burst;
+    int priority;
+    int wt;
+    int rt;
+    int tat;
+} Process;
+
+int main() {
+    Process p[10], swap;
+    float avg_tat = 0, avg_wt = 0;
+    int n, i, j, total = 0;
+
+    printf("\nENTER THE NUMBER OF PROCESSES: ");
+    scanf("%d", &n);
+
+    for(i=0; i<n; i++) {
+        sprintf(p[i].pname, "P%d", i+1);
+        printf("\nENTER BURST TIME FOR %s: ", p[i].pname);
+        scanf("%d", &p[i].burst);
+        printf("ENTER PRIORITY FOR %s: ", p[i].pname);
+        scanf("%d", &p[i].priority);
+    }
+
+    // Sort by priority (ascending: smaller = higher priority)
+    for(i=0; i<n-1; i++) {
+        for(j=i+1; j<n; j++) {
+            if(p[i].priority > p[j].priority) {
+                swap = p[i];
+                p[i] = p[j];
+                p[j] = swap;
+            }
+        }
+    }
+
+    // Calculate waiting time, turnaround time
+    for(i=0; i<n; i++) {
+        p[i].wt = total;
+        p[i].rt = p[i].wt;
+        p[i].tat = p[i].burst + p[i].wt;
+        total += p[i].burst;
+        avg_tat += p[i].tat;
+        avg_wt += p[i].wt;
+    }
+
+    avg_wt /= n;
+    avg_tat /= n;
+
+    // Display results
+    printf("\n\nProcess\tPriority\tBurst\tWaiting\tTurnAround");
+    for(i=0; i<n; i++) {
+        printf("\n%s\t%d\t\t%d\t%d\t%d",
+               p[i].pname, p[i].priority, p[i].burst, p[i].wt, p[i].tat);
+    }
+
+    printf("\n\nAVERAGE WAITING TIME: %.2f", avg_wt);
+    printf("\nAVERAGE TURNAROUND TIME: %.2f\n", avg_tat);
+
+    return 0;
+}
