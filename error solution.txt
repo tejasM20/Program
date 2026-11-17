@@ -1,0 +1,665 @@
+Worked for 12s
+Machine Learning Practicals 1–5: Errors, Causes and Solutions
+Here is a consolidated troubleshooting record of the errors we encountered while setting up and executing your five Machine Learning practicals in VS Code.
+
+I've arranged it practical-wise so you can use it as a revision document and troubleshooting guide.
+
+Practical 1 – Uber Fare Prediction
+Algorithms: Linear Regression and Random Forest Regression.
+
+Error 1: Python was not found
+Error
+Python was not found; run without arguments to install from the Microsoft Store.
+Cause:
+
+Windows could not identify the python command.
+
+Python was installed, but the command was not properly configured for Code Runner.
+
+Solution:
+
+We changed the Python command in VS Code settings.json.
+
+Previously:
+
+"python": "python -u"
+
+Changed to:
+
+"python": "py -3.14 -u"
+
+This allowed Code Runner to execute Python 3.14.
+
+Error 2: Code Runner exited with code 9009
+Error
+[Done] exited with code=9009
+Cause:
+
+Code Runner could not locate or execute the configured Python command.
+
+Solution:
+
+We corrected the Python interpreter command in settings.json:
+
+"python": "py -3.14 -u"
+
+After correcting it, the test program executed successfully with exit code 0.
+
+Error 3: SyntaxError due to merged statements
+Error
+Incorrect code:
+
+p1 = lr.predict(X_test)lr = LinearRegression()
+
+Cause:
+
+Two Python statements were accidentally joined on the same line without a separator.
+
+Solution:
+
+Write each statement separately:
+
+lr = LinearRegression()
+
+lr.fit(X_train, y_train)
+
+p1 = lr.predict(X_test)
+
+Error 4: Incorrect assignment statement
+Error
+Incorrect code:
+
+p2 = rf.predict(X_test) = RandomForestRegressor()
+
+Cause:
+
+The model creation and prediction statements were written incorrectly.
+
+Solution:
+
+First create the model, then train it, and finally make predictions.
+
+rf = RandomForestRegressor()
+
+rf.fit(X_train, y_train)
+
+p2 = rf.predict(X_test)
+
+Error 5: Random Forest model not initialized
+Error
+NameError: name 'rf' is not defined
+Cause:
+
+The variable rf was used before creating the Random Forest model.
+
+Solution:
+
+Initialize the model before using it:
+
+rf = RandomForestRegressor(random_state=42)
+
+Then train it:
+
+rf.fit(X_train, y_train)
+
+Error 6: Dataset file not found
+Possible error:
+
+FileNotFoundError: [Errno 2] No such file or directory
+Cause:
+
+The program could not find uber.csv in the location specified in pd.read_csv().
+
+Solution:
+
+Keep the dataset in the correct folder and use a path relative to the Python file:
+
+from pathlib import Path
+
+dataset_path = Path(__file__).resolve().parent / "uber.csv"
+
+df = pd.read_csv(dataset_path)
+
+Practical 2 – Bank Customer Churn Prediction using ANN
+Algorithm: Artificial Neural Network (ANN).
+
+Error 1: Python was not found
+Error
+Python was not found; run without arguments to install from the Microsoft Store.
+Cause:
+
+The Python command was not available in the terminal's PATH or was intercepted by the Windows Microsoft Store alias.
+
+Solution:
+
+We used the full Python interpreter path instead of relying on the python command.
+
+Example:
+
+"D:\Practicals\ML\Practical2\.venv\Scripts\python.exe" bank_churn_prediction.py
+Error 2: TensorFlow DLL loading error
+Error
+[TensorFlow DLL Diagnostic] Analyzing:
+_pywrap_tensorflow_internal.pyd
+
+[Error] Failed to load _pywrap_tensorflow_common.dll
+Cause:
+
+TensorFlow was not loading correctly in the Python 3.14 environment.
+
+This was an environment and compatibility problem, not an error in the ANN code.
+
+Solution:
+
+We created and used a separate virtual environment with Python 3.12.10.
+
+Virtual environment location:
+
+D:\Practicals\ML\Practical2\.venv
+We installed the required libraries in that environment, including TensorFlow.
+
+To activate it:
+
+D:\Practicals\ML\Practical2\.venv\Scripts\activate.bat
+To check TensorFlow:
+
+python -c "import tensorflow as tf; print(tf.__version__)"
+Error 3: Dataset file not found
+Error
+FileNotFoundError:
+No such file or directory: 'dataset/Churn_Modelling.csv'
+Cause:
+
+The dataset was not available at the relative path expected by the program.
+
+Solution:
+
+We kept the CSV file inside the dataset folder and used its full path:
+
+df = pd.read_csv(
+    r"D:\Practicals\ML\Practical2\dataset\Churn_Modelling.csv"
+)
+
+Error 4: Google Colab code used in local VS Code
+Problem:
+
+The original code included:
+
+from google.colab import files
+
+Cause:
+
+google.colab is intended for Google Colab notebooks, not ordinary local Python execution.
+
+Solution:
+
+We removed the Colab-specific import and file-upload code.
+
+We loaded the dataset directly:
+
+df = pd.read_csv(
+    r"D:\Practicals\ML\Practical2\dataset\Churn_Modelling.csv"
+)
+
+Error 5: Accuracy was high, but the model did not identify churn customers
+Your output was:
+
+Accuracy: 0.92
+
+Confusion Matrix:
+[[92  0]
+ [ 8  0]]
+Cause:
+
+The model predicted every test record as Not Exited. The dataset had an imbalance between the two classes.
+
+This was a model-performance issue, not a Python execution error.
+
+Solution:
+
+We identified the need for techniques such as class weighting and prediction-threshold tuning.
+
+For example, class weighting can be added during training:
+
+model.fit(
+    X_train,
+    y_train,
+    epochs=50,
+    batch_size=32,
+    class_weight={0: 1, 1: 3}
+)
+
+The weights should be selected based on the training data and evaluation results.
+
+Practical 3 – Gradient Descent Algorithm
+Algorithm: Gradient Descent.
+
+Error 1: Extra ^N before the command
+Error
+Your terminal showed something similar to:
+
+(.venv) C:\Users\Tejas>^N"D:\Practicals\ML\Practical2\.venv\Scripts\python.exe"
+Cause:
+
+An accidental keyboard character was inserted before the command.
+
+Solution:
+
+Remove ^N and execute the command again.
+
+Correct command:
+
+"D:\Practicals\ML\Practical2\.venv\Scripts\python.exe" -u "D:\Practicals\ML\Practical2\Gradient_Descent_Algorithm.py"
+Error 2: Incorrect file path
+Error
+You encountered a message similar to:
+
+The filename, directory name, or volume label syntax is incorrect.
+Cause:
+
+The command contained an invalid or incorrect file path, including the accidental ^N character.
+
+Solution:
+
+Use the correct location of the Python file.
+
+For example, if the file is stored in Practical 3:
+
+"D:\Practicals\ML\Practical2\.venv\Scripts\python.exe" -u "D:\Practicals\ML\Practical3\Gradient_Descent_Algorithm.py"
+Important concept: Gradient Descent is not an error
+Your code uses:
+
+x = 2
+lr = 0.1
+
+for i in range(20):
+    gradient = 2 * (x + 3)
+    x = x - lr * gradient
+
+The expected result is approximately:
+
+Minimum x = -2.9424
+Minimum y = 0.0033
+The exact mathematical minimum is:
+
+x
+=
+−
+3
+,
+y
+=
+0
+x=−3,y=0
+The small difference occurs because the algorithm performs only 20 iterations.
+
+Practical 4 – Diabetes Prediction using KNN
+Algorithm: K-Nearest Neighbors (KNN).
+
+Error 1: Dataset file not found
+Error
+Initially, the program searched for:
+
+D:\Practicals\ML\Practical3\dataset\diabetes.csv
+But your dataset was stored in Practical 4.
+
+Cause:
+
+The Python script was using the wrong folder path.
+
+Solution:
+
+We used Path(__file__) to automatically locate the dataset relative to the script.
+
+from pathlib import Path
+
+dataset_path = (
+    Path(__file__).resolve().parent
+    / "dataset"
+    / "diabetes.csv"
+)
+
+df = pd.read_csv(dataset_path)
+
+Error 2: Running the wrong practical file
+You initially ran the script from Practical 3 instead of Practical 4.
+
+Solution:
+
+Execute the correct file:
+
+"D:\Practicals\ML\Practical2\.venv\Scripts\python.exe" -u "D:\Practicals\ML\Practical4\KNN_Diabetes.py"
+Error 3: Missing feature scaling
+This was not a runtime error, but an important ML implementation issue.
+
+Cause:
+
+KNN calculates distances between data points. Features with larger numerical ranges can influence the distance more strongly.
+
+Solution:
+
+We used StandardScaler:
+
+scaler = StandardScaler()
+
+X_train = scaler.fit_transform(X_train)
+
+X_test = scaler.transform(X_test)
+
+Important: Always use fit_transform() on training data and only transform() on testing data to avoid data leakage.
+
+Practical 4 performance interpretation
+Your successful output:
+
+Accuracy: 0.799
+Error Rate: 0.201
+Precision: 0.862
+Recall: 0.481
+These values are not errors.
+
+Accuracy: 79.9% of predictions were correct.
+
+Error Rate: 20.1% of predictions were incorrect.
+
+Precision: 86.2% of predicted diabetes cases were actually positive.
+
+Recall: 48.1% of actual diabetes cases were identified.
+
+The relatively low recall means the model missed many positive cases.
+
+Practical 5 – Sales Data Clustering using K-Means
+Algorithm: K-Means Clustering and Elbow Method.
+
+Error 1: Dataset file not found
+Error
+Your first execution showed:
+
+FileNotFoundError:
+No such file or directory:
+
+D:\Practicals\ML\Practical4\dataset\sales_data_sample.csv
+Cause:
+
+You accidentally executed the K-Means script from Practical 4.
+
+The code searched for the CSV in the Practical 4 folder.
+
+Solution:
+
+We ran the correct file from Practical 5:
+
+"D:\Practicals\ML\Practical2\.venv\Scripts\python.exe" -u "D:\Practicals\ML\Practical5\KMeans_Clustering.py"
+Error 2: Dataset encoding issue (preventive correction)
+The dataset may contain characters that do not match the default UTF-8 encoding.
+
+Solution:
+
+We used:
+
+df = pd.read_csv(
+    dataset_path,
+    encoding="latin1"
+)
+
+This helps load CSV files containing certain special characters.
+
+It was a precaution in the corrected code, not an error shown in your final successful run.
+
+Error 3: Incorrect dataset location
+Cause:
+
+The code expects the CSV inside the dataset folder.
+
+Solution:
+
+We organized the folder as:
+
+Practical5
+│
+├── dataset
+│   └── sales_data_sample.csv
+│
+└── KMeans_Clustering.py
+Your final execution was successful:
+
+SSE Values:
+K = 1 SSE = 1252115.53
+K = 2 SSE = 435557.53
+K = 3 SSE = 304502.17
+K = 4 SSE = 227772.17
+K = 5 SSE = 194949.72
+
+K-Means Clustering Completed!
+Complete Error Revision Table
+Use this table for quick revision before your practical examination.
+
+No.
+
+Practical
+
+Error / Problem
+
+Solution
+
+1
+
+P1
+
+Python not found
+
+Configure Python interpreter
+
+2
+
+P1
+
+Code Runner exit code 9009
+
+Correct Code Runner command
+
+3
+
+P1
+
+SyntaxError
+
+Separate merged statements
+
+4
+
+P1
+
+Incorrect assignment
+
+Correct model creation and prediction
+
+5
+
+P1
+
+rf not defined
+
+Initialize Random Forest
+
+6
+
+P1
+
+Dataset not found
+
+Correct CSV path
+
+7
+
+P2
+
+Python not found
+
+Use correct interpreter path
+
+8
+
+P2
+
+TensorFlow DLL error
+
+Use Python 3.12 virtual environment
+
+9
+
+P2
+
+Dataset not found
+
+Correct dataset path
+
+10
+
+P2
+
+Google Colab import error
+
+Remove Colab-specific code
+
+11
+
+P2
+
+High accuracy but zero churn recall
+
+Handle class imbalance
+
+12
+
+P3
+
+Extra ^N in command
+
+Remove accidental character
+
+13
+
+P3
+
+Invalid file path
+
+Correct script path
+
+14
+
+P4
+
+Dataset not found
+
+Use correct Practical 4 path
+
+15
+
+P4
+
+Wrong script execution
+
+Run KNN file from Practical 4
+
+16
+
+P4
+
+Feature-scale differences
+
+Apply StandardScaler
+
+17
+
+P5
+
+Dataset not found
+
+Use Practical 5 dataset path
+
+18
+
+P5
+
+Possible CSV encoding issue
+
+Use encoding="latin1"
+
+Important Python and VS Code Commands
+These are the commands we used or discussed during troubleshooting.
+
+Purpose
+
+Command
+
+Check Python version
+
+python --version
+
+Check Python launcher
+
+py --version
+
+Check pip version
+
+python -m pip --version
+
+Activate virtual environment
+
+.venv\Scripts\activate.bat
+
+Install Pandas
+
+python -m pip install pandas
+
+Install Matplotlib
+
+python -m pip install matplotlib
+
+Install Scikit-learn
+
+python -m pip install scikit-learn
+
+Install TensorFlow
+
+python -m pip install tensorflow
+
+Check TensorFlow
+
+python -c "import tensorflow as tf; print(tf.__version__)"
+
+Run Python file
+
+python filename.py
+
+Remember: These commands should be run using the appropriate Python interpreter or activated virtual environment.
+
+Recommended folder structure for all five practicals
+D:\Practicals\ML
+
+Practical1
+
+uber.csv · Uber fare prediction Python file
+
+Practical2
+
+.venv · dataset/Churn_Modelling.csv · bank_churn_prediction.py
+
+Practical3
+
+Gradient_Descent_Algorithm.py
+
+Practical4
+
+dataset/diabetes.csv · KNN_Diabetes.py
+
+Practical5
+
+dataset/sales_data_sample.csv · KMeans_Clustering.py
+
+My recommendation: Keep this as your ML practical troubleshooting record. The most important recurring issues were incorrect dataset paths, Python interpreter configuration, virtual environment setup, and incorrect Python syntax.
+
+You have now successfully executed Practicals 2, 4, and 5, while Practical 1's code and execution setup were corrected. Practical 3's final successful execution was not confirmed in our discussion.
+
+
+
